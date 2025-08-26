@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Crop Chatbot</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .chat-box { border: 1px solid #ccc; padding: 15px; width: 500px; margin: auto; border-radius: 10px; }
+        .user { color: blue; margin-top: 15px; }
+        .bot { color: green; margin-top: 10px; }
+        input[type=text] { width: 70%; padding: 8px; }
+        button { padding: 8px 15px; margin-left: 5px; }
+    </style>
+</head>
+<body>
+    <h2>🌱 Crop Information Chatbot</h2>
+    <div class="chat-box">
+        <form method="POST" action="/chat">
+            <input type="text" name="message" placeholder="Enter crop name..." required>
+            <button type="submit">Ask</button>
+        </form>
+
+        {% if user_input %}
+            <div class="user"><b>You:</b> {{ user_input }}</div>
+            <div class="bot"><b>Bot:</b> {{ response }}</div>
+        {% endif %}
+    </div>
+</body>
+</html>
