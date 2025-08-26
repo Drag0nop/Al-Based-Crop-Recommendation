@@ -18,8 +18,19 @@ CROP_PROFIT_DATA = {
     'sugarcane': {'cost_per_ha': 80000, 'yield_per_ha': 50000, 'price_per_kg': 3.5, 'season': 'Annual', 'growth_period': '300-365 days'},
     'tomato': {'cost_per_ha': 70000, 'yield_per_ha': 25000, 'price_per_kg': 15, 'season': 'Rabi/Summer', 'growth_period': '90-120 days'},
     'potato': {'cost_per_ha': 55000, 'yield_per_ha': 20000, 'price_per_kg': 12, 'season': 'Rabi', 'growth_period': '90-120 days'},
-    'onion': {'cost_per_ha': 50000, 'yield_per_ha': 15000, 'price_per_kg': 18, 'season': 'Rabi', 'growth_period': '120-150 days'}
+    'onion': {'cost_per_ha': 50000, 'yield_per_ha': 15000, 'price_per_kg': 18, 'season': 'Rabi', 'growth_period': '120-150 days'},
+    'barley': {'cost_per_ha': 38000, 'yield_per_ha': 2800, 'price_per_kg': 28, 'season': 'Rabi', 'growth_period': '100-120 days'},
+    'mustard': {'cost_per_ha': 30000, 'yield_per_ha': 1200, 'price_per_kg': 50, 'season': 'Rabi', 'growth_period': '100-110 days'},
+    'groundnut': {'cost_per_ha': 45000, 'yield_per_ha': 2000, 'price_per_kg': 55, 'season': 'Kharif', 'growth_period': '120-150 days'},
+    'soybean': {'cost_per_ha': 42000, 'yield_per_ha': 2200, 'price_per_kg': 45, 'season': 'Kharif', 'growth_period': '90-110 days'},
+    'pigeonpea': {'cost_per_ha': 30000, 'yield_per_ha': 1500, 'price_per_kg': 70, 'season': 'Kharif', 'growth_period': '150-210 days'},
+    'chickpea': {'cost_per_ha': 28000, 'yield_per_ha': 1800, 'price_per_kg': 60, 'season': 'Rabi', 'growth_period': '100-120 days'},
+    'banana': {'cost_per_ha': 100000, 'yield_per_ha': 60000, 'price_per_kg': 10, 'season': 'Annual', 'growth_period': '300-365 days'},
+    'mango': {'cost_per_ha': 120000, 'yield_per_ha': 10000, 'price_per_kg': 40, 'season': 'Summer', 'growth_period': '3-5 years (orchard crop)'},
+    'tea': {'cost_per_ha': 150000, 'yield_per_ha': 2500, 'price_per_kg': 150, 'season': 'Annual', 'growth_period': '4-5 years (perennial)'},
+    'coffee': {'cost_per_ha': 180000, 'yield_per_ha': 2000, 'price_per_kg': 200, 'season': 'Annual', 'growth_period': '3-4 years (perennial)'}
 }
+
 
 # Initialize and train/load model
 DATASET_PATH = "Crop_recommendation.csv"
