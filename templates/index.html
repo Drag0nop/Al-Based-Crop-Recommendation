@@ -32,6 +32,7 @@
             color: white;
             padding: 30px;
             text-align: center;
+            position: relative;
         }
 
         .header h1 {
@@ -217,6 +218,206 @@
             background: linear-gradient(45deg, #e74c3c, #c0392b);
         }
 
+        /* Chatbot Button Styles */
+        .chatbot-trigger {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #4CAF50, #45a049);
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 4px 20px rgba(76, 175, 80, 0.4);
+            transition: all 0.3s ease;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+        }
+
+        .chatbot-trigger:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 30px rgba(76, 175, 80, 0.6);
+        }
+
+        .chatbot-trigger.active {
+            background: linear-gradient(135deg, #f44336, #d32f2f);
+        }
+
+        /* Mini Chatbot Styles */
+        .mini-chatbot {
+            position: fixed;
+            bottom: 100px;
+            right: 30px;
+            width: 350px;
+            height: 500px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            display: none;
+            flex-direction: column;
+            z-index: 999;
+            overflow: hidden;
+        }
+
+        .mini-chatbot.show {
+            display: flex;
+            animation: slideUp 0.3s ease-out;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .mini-chatbot-header {
+            background: linear-gradient(135deg, #4CAF50, #45a049);
+            color: white;
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .mini-chatbot-header h3 {
+            font-size: 1.1em;
+            margin: 0;
+        }
+
+        .mini-close-btn {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 20px;
+            cursor: pointer;
+            padding: 0;
+            width: 25px;
+            height: 25px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .mini-chat-messages {
+            flex: 1;
+            padding: 15px;
+            overflow-y: auto;
+            background: #f8f9fa;
+            font-size: 14px;
+        }
+
+        .mini-message {
+            margin-bottom: 10px;
+            display: flex;
+            align-items: flex-start;
+        }
+
+        .mini-message.user {
+            justify-content: flex-end;
+        }
+
+        .mini-message-content {
+            max-width: 80%;
+            padding: 8px 12px;
+            border-radius: 12px;
+            word-wrap: break-word;
+            font-size: 13px;
+        }
+
+        .mini-message.bot .mini-message-content {
+            background: #e3f2fd;
+            color: #1976d2;
+            border-bottom-left-radius: 3px;
+        }
+
+        .mini-message.user .mini-message-content {
+            background: #4CAF50;
+            color: white;
+            border-bottom-right-radius: 3px;
+        }
+
+        .mini-chat-input-container {
+            padding: 15px;
+            background: white;
+            border-top: 1px solid #eee;
+        }
+
+        .mini-chat-form {
+            display: flex;
+            gap: 8px;
+        }
+
+        .mini-chat-input {
+            flex: 1;
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 20px;
+            font-size: 14px;
+            outline: none;
+        }
+
+        .mini-chat-input:focus {
+            border-color: #4CAF50;
+        }
+
+        .mini-send-btn {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .mini-send-btn:hover {
+            background: #45a049;
+        }
+
+        .mini-send-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        .mini-typing {
+            display: none;
+            padding: 5px 15px;
+            font-style: italic;
+            color: #666;
+            font-size: 12px;
+        }
+
+        .mini-typing.show {
+            display: block;
+        }
+
+        .mini-chip {
+            display: inline-block;
+            background: #e8f5e8;
+            color: #2c5530;
+            padding: 3px 8px;
+            border-radius: 10px;
+            font-size: 11px;
+            cursor: pointer;
+            margin: 2px;
+            border: 1px solid #c8e6c9;
+        }
+
+        .mini-chip:hover {
+            background: #4CAF50;
+            color: white;
+        }
+
         @media (max-width: 768px) {
             .main-content {
                 flex-direction: column;
@@ -224,6 +425,18 @@
             
             .header h1 {
                 font-size: 2em;
+            }
+
+            .mini-chatbot {
+                width: calc(100vw - 20px);
+                right: 10px;
+                left: 10px;
+                height: 400px;
+            }
+
+            .chatbot-trigger {
+                bottom: 20px;
+                right: 20px;
             }
         }
     </style>
@@ -289,6 +502,45 @@
                     <div id="cropRecommendations"></div>
                 </div>
             </div>
+        </div>
+    </div>
+
+    <!-- Chatbot Button -->
+    <button class="chatbot-trigger" id="chatbotTrigger">💬</button>
+
+    <!-- Mini Chatbot -->
+    <div class="mini-chatbot" id="miniChatbot">
+        <div class="mini-chatbot-header">
+            <h3>🌱 Crop Assistant</h3>
+            <button class="mini-close-btn" id="closeChatbot">×</button>
+        </div>
+        
+        <div class="mini-chat-messages" id="miniChatMessages">
+            <div class="mini-message bot">
+                <div class="mini-message-content">
+                    Hi! I can help you learn about crops. Try:
+                    <div style="margin-top: 5px;">
+                        <span class="mini-chip" onclick="sendMiniMessage('Tell me about rice')">Rice info</span>
+                        <span class="mini-chip" onclick="sendMiniMessage('Tomato diseases')">Diseases</span>
+                        <span class="mini-chip" onclick="sendMiniMessage('Wheat profit')">Profit</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="mini-typing" id="miniTyping">Bot is typing...</div>
+        
+        <div class="mini-chat-input-container">
+            <form class="mini-chat-form" id="miniChatForm">
+                <input 
+                    type="text" 
+                    class="mini-chat-input" 
+                    id="miniChatInput" 
+                    placeholder="Ask about crops..."
+                    autocomplete="off"
+                >
+                <button type="submit" class="mini-send-btn" id="miniSendBtn">Send</button>
+            </form>
         </div>
     </div>
 
@@ -448,6 +700,7 @@
             });
         }
 
+        // Crop prediction form handler
         document.getElementById('cropForm').addEventListener('submit', async function(e) {
             e.preventDefault();
 
@@ -476,6 +729,180 @@
                 document.getElementById('loading').style.display = 'none';
                 document.getElementById('results').style.display = 'block';
             }, 2000);
+        });
+
+        // Mini Chatbot functionality
+        const chatbotTrigger = document.getElementById('chatbotTrigger');
+        const miniChatbot = document.getElementById('miniChatbot');
+        const closeChatbot = document.getElementById('closeChatbot');
+        const miniChatMessages = document.getElementById('miniChatMessages');
+        const miniChatForm = document.getElementById('miniChatForm');
+        const miniChatInput = document.getElementById('miniChatInput');
+        const miniSendBtn = document.getElementById('miniSendBtn');
+        const miniTyping = document.getElementById('miniTyping');
+
+        let chatbotOpen = false;
+
+        chatbotTrigger.addEventListener('click', () => {
+            chatbotOpen = !chatbotOpen;
+            if (chatbotOpen) {
+                miniChatbot.classList.add('show');
+                chatbotTrigger.classList.add('active');
+                chatbotTrigger.innerHTML = '×';
+                miniChatInput.focus();
+            } else {
+                miniChatbot.classList.remove('show');
+                chatbotTrigger.classList.remove('active');
+                chatbotTrigger.innerHTML = '💬';
+            }
+        });
+
+        closeChatbot.addEventListener('click', () => {
+            chatbotOpen = false;
+            miniChatbot.classList.remove('show');
+            chatbotTrigger.classList.remove('active');
+            chatbotTrigger.innerHTML = '💬';
+        });
+
+        function appendMiniMessage(content, isUser = false) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `mini-message ${isUser ? 'user' : 'bot'}`;
+            
+            const contentDiv = document.createElement('div');
+            contentDiv.className = 'mini-message-content';
+            
+            if (isUser) {
+                contentDiv.textContent = content;
+            } else {
+                contentDiv.innerHTML = content;
+            }
+            
+            messageDiv.appendChild(contentDiv);
+            miniChatMessages.appendChild(messageDiv);
+            miniChatMessages.scrollTop = miniChatMessages.scrollHeight;
+        }
+
+        function formatMiniResponse(response) {
+            if (response.error) {
+                return `<span style="color: #e74c3c;">${response.error}</span>`;
+            }
+
+            switch (response.type) {
+                case 'general_info':
+                    return `
+                        <strong>${response.crop_name}</strong><br>
+                        <small><em>${response.scientific_name}</em></small><br>
+                        <strong>Type:</strong> ${response.type_category}<br>
+                        <strong>Season:</strong> ${response.season}<br>
+                        <strong>Climate:</strong> ${response.climate}
+                        <div style="margin-top: 5px;">
+                            <span class="mini-chip" onclick="sendMiniMessage('${response.crop_name} diseases')">Diseases</span>
+                            <span class="mini-chip" onclick="sendMiniMessage('${response.crop_name} care')">Care Tips</span>
+                        </div>
+                    `;
+
+                case 'diseases':
+                    return `
+                        <strong>Diseases - ${response.crop_name}:</strong><br>
+                        ${response.diseases.slice(0, 3).map(d => `• ${d}`).join('<br>')}
+                    `;
+
+                case 'care_tips':
+                    return `
+                        <strong>Care Tips - ${response.crop_name}:</strong><br>
+                        ${response.care_tips.slice(0, 2).map(tip => `• ${tip}`).join('<br>')}
+                    `;
+
+                case 'profit_analysis':
+                    const profitMargin = ((response.profit / response.revenue) * 100).toFixed(1);
+                    return `
+                        <strong>Profit - ${response.crop_name}:</strong><br>
+                        <strong>Cost:</strong> ₹${response.cost_per_ha.toLocaleString()}/ha<br>
+                        <strong>Profit:</strong> ₹${response.profit.toLocaleString()} (${profitMargin}%)
+                    `;
+
+                case 'help':
+                    return `
+                        I can help with:<br>
+                        <div style="margin-top: 5px;">
+                            ${response.available_crops.slice(0, 6).map(crop => 
+                                `<span class="mini-chip" onclick="sendMiniMessage('Tell me about ${crop}')">${crop}</span>`
+                            ).join('')}
+                        </div>
+                    `;
+
+                default:
+                    return response.message || 'I received your message.';
+            }
+        }
+
+        function sendMiniMessage(message = null) {
+            const messageText = message || miniChatInput.value.trim();
+            if (!messageText) return;
+
+            // Add user message
+            appendMiniMessage(messageText, true);
+            
+            // Clear input
+            if (!message) miniChatInput.value = '';
+            
+            // Disable input
+            miniSendBtn.disabled = true;
+            miniChatInput.disabled = true;
+            miniTyping.classList.add('show');
+
+            // Send to server
+            fetch('/api/chatbot/message', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ message: messageText })
+            })
+            .then(response => response.json())
+            .then(data => {
+                miniTyping.classList.remove('show');
+                if (data.success) {
+                    const formattedResponse = formatMiniResponse(data.response);
+                    appendMiniMessage(formattedResponse, false);
+                } else {
+                    appendMiniMessage(`Error: ${data.error}`, false);
+                }
+            })
+            .catch(error => {
+                miniTyping.classList.remove('show');
+                appendMiniMessage(`Error: ${error.message}`, false);
+            })
+            .finally(() => {
+                miniSendBtn.disabled = false;
+                miniChatInput.disabled = false;
+                if (!message) miniChatInput.focus();
+            });
+        }
+
+        // Mini chat form event listeners
+        miniChatForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            sendMiniMessage();
+        });
+
+        miniChatInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendMiniMessage();
+            }
+        });
+
+        // Close chatbot when clicking outside
+        document.addEventListener('click', (e) => {
+            if (chatbotOpen && 
+                !miniChatbot.contains(e.target) && 
+                !chatbotTrigger.contains(e.target)) {
+                chatbotOpen = false;
+                miniChatbot.classList.remove('show');
+                chatbotTrigger.classList.remove('active');
+                chatbotTrigger.innerHTML = '💬';
+            }
         });
     </script>
 </body>
