@@ -1,20 +1,17 @@
 from flask import Flask, render_template, request
 import requests
+import wikipedia
 
 app = Flask(__name__)
 
+
 def get_crop_summary(crop_name):
     try:
-        url = f"https://en.wikipedia.org/api/rest_v1/page/summary/{crop_name}"
-        response = requests.get(url)
-        data = response.json()
-        
-        if "extract" in data:
-            return data["extract"]
-        else:
-            return "Sorry, I couldn't find information about that crop."
+        summary = wikipedia.summary(crop_name, sentences=3)
+        return summary
     except Exception as e:
         return f"Error fetching data: {e}"
+
 
 @app.route('/')
 def index():
