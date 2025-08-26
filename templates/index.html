@@ -1,132 +1,482 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Bootstrap demo</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-KK94CHFLLe+nY2dmCWGMq91rCGa5gtU4mk92HdvYe+M/SXH301p5ILy+dN9+nJOZ" crossorigin="anonymous">
-  </head>
-  <style>
-		h1 {
-			color: mediumseagreen;
-			text-align: center;
-		}
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Crop Recommendation System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-		.warning {
-			color: red;
-			font-weight: bold;
-			text-align: center;
-		}
-		.card{
-		margin-left:410px;
-		margin-top: 20px;
-		color: white;
-		}
-		.container{
-		background:#edf2f7;
-		font-weight: bold;
-		padding-bottom:10px;
-		border-radius: 15px;
-		}
-	</style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
 
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
 
+        .header {
+            background: linear-gradient(45deg, #2ecc71, #27ae60);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
 
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
 
-  <body style="background:#BCBBB8">
-  <!--=======================navbar=====================================================-->
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-  <div class="container-fluid">
-    <a class="navbar-brand" href="/">Crop Recommendation</a>
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-      <span class="navbar-toggler-icon"></span>
-    </button>
-    <div class="collapse navbar-collapse" id="navbarSupportedContent">
-      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-        <li class="nav-item">
-          <a class="nav-link active" aria-current="page" href="#">home</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="#">Contact</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link disabled">About</a>
-        </li>
-      </ul>
-      <form class="d-flex" role="search">
-        <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
-        <button class="btn btn-outline-success" type="submit">Search</button>
-      </form>
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .main-content {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            padding: 30px;
+        }
+
+        .form-section {
+            flex: 1;
+            min-width: 300px;
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+        }
+
+        .results-section {
+            flex: 1;
+            min-width: 300px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e1e8ed;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: #3498db;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.2);
+        }
+
+        .btn-predict {
+            width: 100%;
+            background: linear-gradient(45deg, #3498db, #2980b9);
+            color: white;
+            padding: 15px;
+            border: none;
+            border-radius: 8px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-predict:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(52, 152, 219, 0.3);
+        }
+
+        .btn-predict:disabled {
+            background: #bdc3c7;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #3498db;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .results {
+            display: none;
+        }
+
+        .crop-card {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            border-left: 5px solid #2ecc71;
+            transition: transform 0.3s ease;
+        }
+
+        .crop-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .crop-card.rank-1 { border-left-color: #f1c40f; }
+        .crop-card.rank-2 { border-left-color: #e67e22; }
+        .crop-card.rank-3 { border-left-color: #e74c3c; }
+
+        .crop-name {
+            font-size: 1.5em;
+            font-weight: 700;
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+
+        .crop-probability {
+            background: linear-gradient(45deg, #2ecc71, #27ae60);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            display: inline-block;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+
+        .profit-analysis {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 10px;
+        }
+
+        .profit-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            padding: 5px 0;
+            border-bottom: 1px solid #ecf0f1;
+        }
+
+        .profit-item:last-child {
+            border-bottom: none;
+            font-weight: 600;
+            color: #27ae60;
+        }
+
+        .rank-badge {
+            background: linear-gradient(45deg, #f1c40f, #f39c12);
+            color: white;
+            padding: 5px 12px;
+            border-radius: 15px;
+            font-size: 0.9em;
+            font-weight: 600;
+            float: right;
+        }
+
+        .rank-2 .rank-badge {
+            background: linear-gradient(45deg, #e67e22, #d35400);
+        }
+
+        .rank-3 .rank-badge {
+            background: linear-gradient(45deg, #e74c3c, #c0392b);
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                flex-direction: column;
+            }
+            
+            .header h1 {
+                font-size: 2em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🌾 AI Crop Recommendation System</h1>
+            <p>Get intelligent crop suggestions based on soil and climate conditions</p>
+        </div>
+
+        <div class="main-content">
+            <div class="form-section">
+                <h2 style="margin-bottom: 20px; color: #2c3e50;">Enter Field Parameters</h2>
+                <form id="cropForm">
+                    <div class="form-group">
+                        <label for="nitrogen">Nitrogen (N) - kg/ha:</label>
+                        <input type="number" id="nitrogen" name="nitrogen" min="0" max="200" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="phosphorus">Phosphorus (P) - kg/ha:</label>
+                        <input type="number" id="phosphorus" name="phosphorus" min="0" max="150" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="potassium">Potassium (K) - kg/ha:</label>
+                        <input type="number" id="potassium" name="potassium" min="0" max="300" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="temperature">Temperature (°C):</label>
+                        <input type="number" id="temperature" name="temperature" step="0.1" min="0" max="50" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="humidity">Humidity (%):</label>
+                        <input type="number" id="humidity" name="humidity" min="0" max="100" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="ph">pH Level:</label>
+                        <input type="number" id="ph" name="ph" step="0.1" min="0" max="14" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="rainfall">Rainfall (mm):</label>
+                        <input type="number" id="rainfall" name="rainfall" min="0" max="3000" required>
+                    </div>
+
+                    <button type="submit" class="btn-predict">Get Crop Recommendations</button>
+                </form>
+            </div>
+
+            <div class="results-section">
+                <div class="loading" id="loading">
+                    <div class="spinner"></div>
+                    <p>Analyzing soil conditions and generating recommendations...</p>
+                </div>
+
+                <div class="results" id="results">
+                    <h2 style="margin-bottom: 20px; color: #2c3e50;">Top 3 Recommended Crops</h2>
+                    <div id="cropRecommendations"></div>
+                </div>
+            </div>
+        </div>
     </div>
-  </div>
-</nav>
 
-<!--==========================================================================================-->
-  <div class="container my-3 mt-3">
-      <h1 class="text-success">Crop Recommendation System <span class="text-success">🌱</span></h1>
+    <script>
+        // Sample crop data with profit analysis
+        const cropProfitData = {
+            rice: {
+                costPerHa: 45000,
+                yieldPerHa: 4500,
+                pricePerKg: 25,
+                season: "Kharif",
+                growthPeriod: "120-150 days"
+            },
+            wheat: {
+                costPerHa: 40000,
+                yieldPerHa: 3500,
+                pricePerKg: 30,
+                season: "Rabi",
+                growthPeriod: "110-130 days"
+            },
+            corn: {
+                costPerHa: 35000,
+                yieldPerHa: 5000,
+                pricePerKg: 20,
+                season: "Kharif",
+                growthPeriod: "90-120 days"
+            },
+            cotton: {
+                costPerHa: 60000,
+                yieldPerHa: 500,
+                pricePerKg: 80,
+                season: "Kharif",
+                growthPeriod: "160-200 days"
+            },
+            sugarcane: {
+                costPerHa: 80000,
+                yieldPerHa: 50000,
+                pricePerKg: 3.5,
+                season: "Annual",
+                growthPeriod: "300-365 days"
+            },
+            tomato: {
+                costPerHa: 70000,
+                yieldPerHa: 25000,
+                pricePerKg: 15,
+                season: "Rabi/Summer",
+                growthPeriod: "90-120 days"
+            },
+            potato: {
+                costPerHa: 55000,
+                yieldPerHa: 20000,
+                pricePerKg: 12,
+                season: "Rabi",
+                growthPeriod: "90-120 days"
+            },
+            onion: {
+                costPerHa: 50000,
+                yieldPerHa: 15000,
+                pricePerKg: 18,
+                season: "Rabi",
+                growthPeriod: "120-150 days"
+            }
+        };
 
-<!--      adding form-->
-      <form action="/predict" method="POST">
-          <div class="row">
-              <div class="col-md-4">
-					<label for="Nitrogen">Nitrogen</label>
-					<input type="number" id="Nitrogen" name="Nitrogen" placeholder="Enter Nitrogen" class="form-control" required step="0">
-				</div>
-               <div class="col-md-4">
-					<label for="Phosporus">Phosphorus</label>
-					<input type="number" id="Phosporus" name="Phosporus" placeholder="Enter Phosphorus" class="form-control" required step="00">
-				</div>
-				<div class="col-md-4">
-					<label for="Potassium">Potassium</label>
-					<input type="number" id="Potassium" name="Potassium" placeholder="Enter Potassium" class="form-control" required step="0">
-				</div>
-          </div>
+        // Mock ML prediction function
+        function predictCrops(inputData) {
+            // Simulate ML model prediction
+            const allCrops = Object.keys(cropProfitData);
+            const predictions = [];
 
-          <div class="row mt-4">
-				<div class="col-md-4">
-					<label for="Temperature">Temperature</label>
-					<input type="number" step="0.01" id="Temperature" name="Temperature" placeholder="Enter Temperature in °C" class="form-control" required step="0">
-				</div>
-				<div class="col-md-4">
-					<label for="Humidity">Humidity</label>
-					<input type="number" step="0.01" id="Humidity" name="Humidity" placeholder="Enter Humidity in %" class="form-control" required step="0">
-				</div>
-				<div class="col-md-4">
-					<label for="pH">pH</label>
-					<input type="number" step="0.01" id="Ph" name="Ph" placeholder="Enter pH value" class="form-control" required step="0">
-				</div>
-			</div>
+            // Simple rule-based prediction for demo
+            allCrops.forEach(crop => {
+                let probability = Math.random() * 0.8 + 0.2; // Random probability between 0.2-1.0
+                
+                // Adjust probability based on conditions (simplified logic)
+                if (crop === 'rice' && inputData.rainfall > 1500) probability *= 1.2;
+                if (crop === 'wheat' && inputData.temperature < 25) probability *= 1.1;
+                if (crop === 'cotton' && inputData.temperature > 25) probability *= 1.1;
+                if (crop === 'tomato' && inputData.ph >= 6 && inputData.ph <= 7) probability *= 1.1;
+                
+                probability = Math.min(probability, 1.0);
+                predictions.push({ crop, probability });
+            });
 
-          <div class="row mt-4">
-				<div class="col-md-4">
-					<label for="Rainfall">Rainfall</label>
-					<input type="number" step="0.01" id="Rainfall" name="Rainfall" placeholder="Enter Rainfall in mm" class="form-control" required>
-				</div>
-			</div>
+            // Sort by probability and return top 3
+            predictions.sort((a, b) => b.probability - a.probability);
+            return predictions.slice(0, 3);
+        }
 
+        function calculateProfitAnalysis(cropName) {
+            const data = cropProfitData[cropName];
+            if (!data) return null;
 
+            const revenue = data.yieldPerHa * data.pricePerKg;
+            const profit = revenue - data.costPerHa;
+            const profitMargin = ((profit / revenue) * 100).toFixed(1);
 
-           <div class="row mt-4">
+            return {
+                ...data,
+                revenue,
+                profit,
+                profitMargin
+            };
+        }
 
-           <div class="col-md-12 text-center">
-				<button type="submit" class="btn btn-primary btn-lg">Get Recommendation</button>
-			</div>
-			</div>
-      </form>
+        function displayResults(predictions) {
+            const container = document.getElementById('cropRecommendations');
+            container.innerHTML = '';
 
+            predictions.forEach((prediction, index) => {
+                const profitAnalysis = calculateProfitAnalysis(prediction.crop);
+                const rank = index + 1;
 
+                const cropCard = document.createElement('div');
+                cropCard.className = `crop-card rank-${rank}`;
 
-       {% if result %}
-		<div class="card bg-dark" style="width: 18rem;">
-		  <img src="{{url_for('static', filename='img.jpg')}}" class="card-img-top" alt="...">
-		  <div class="card-body">
-			<h5 class="card-title">Recommend Crop for cultivation is:</h5>
-			<p class="card-text">{{ result }}</p>
-		  </div>
-		</div>
-	   {% endif %}
-  </div>
+                cropCard.innerHTML = `
+                    <div class="crop-name">
+                        ${prediction.crop.charAt(0).toUpperCase() + prediction.crop.slice(1)}
+                        <span class="rank-badge">Rank ${rank}</span>
+                    </div>
+                    <div class="crop-probability">
+                        Suitability: ${(prediction.probability * 100).toFixed(1)}%
+                    </div>
+                    <div style="margin-bottom: 10px;">
+                        <strong>Season:</strong> ${profitAnalysis.season} | 
+                        <strong>Growth Period:</strong> ${profitAnalysis.growthPeriod}
+                    </div>
+                    <div class="profit-analysis">
+                        <h4 style="margin-bottom: 10px; color: #2c3e50;">💰 Profit Analysis (per hectare)</h4>
+                        <div class="profit-item">
+                            <span>Expected Yield:</span>
+                            <span>${profitAnalysis.yieldPerHa.toLocaleString()} kg</span>
+                        </div>
+                        <div class="profit-item">
+                            <span>Market Price:</span>
+                            <span>₹${profitAnalysis.pricePerKg}/kg</span>
+                        </div>
+                        <div class="profit-item">
+                            <span>Production Cost:</span>
+                            <span>₹${profitAnalysis.costPerHa.toLocaleString()}</span>
+                        </div>
+                        <div class="profit-item">
+                            <span>Expected Revenue:</span>
+                            <span>₹${profitAnalysis.revenue.toLocaleString()}</span>
+                        </div>
+                        <div class="profit-item">
+                            <span>Net Profit:</span>
+                            <span style="color: ${profitAnalysis.profit > 0 ? '#27ae60' : '#e74c3c'}">
+                                ₹${profitAnalysis.profit.toLocaleString()} (${profitAnalysis.profitMargin}%)
+                            </span>
+                        </div>
+                    </div>
+                `;
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ENjdO4Dr2bkBIFxQpeoTz1HIcje39Wm4jDKdf19U8gI4ddQ3GYNS7NTKfAdVQSZe" crossorigin="anonymous"></script>
-  </body>
+                container.appendChild(cropCard);
+            });
+        }
+
+        document.getElementById('cropForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            // Show loading
+            document.getElementById('loading').style.display = 'block';
+            document.getElementById('results').style.display = 'none';
+
+            // Collect form data
+            const formData = new FormData(e.target);
+            const inputData = {
+                nitrogen: parseFloat(formData.get('nitrogen')),
+                phosphorus: parseFloat(formData.get('phosphorus')),
+                potassium: parseFloat(formData.get('potassium')),
+                temperature: parseFloat(formData.get('temperature')),
+                humidity: parseFloat(formData.get('humidity')),
+                ph: parseFloat(formData.get('ph')),
+                rainfall: parseFloat(formData.get('rainfall'))
+            };
+
+            // Simulate API call delay
+            setTimeout(() => {
+                const predictions = predictCrops(inputData);
+                displayResults(predictions);
+
+                // Hide loading and show results
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('results').style.display = 'block';
+            }, 2000);
+        });
+    </script>
+</body>
 </html>
