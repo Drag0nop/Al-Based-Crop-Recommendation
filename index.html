@@ -1,0 +1,839 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Classroom & Timetable Scheduler</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 280px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-right: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 2rem 0;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        .logo {
+            padding: 0 2rem 2rem;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+        }
+
+        .logo h1 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .nav-menu {
+            list-style: none;
+        }
+
+        .nav-item {
+            margin-bottom: 0.5rem;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            padding: 1rem 2rem;
+            text-decoration: none;
+            color: #64748b;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .nav-link:hover,
+        .nav-link.active {
+            color: #667eea;
+            background: linear-gradient(90deg, rgba(102, 126, 234, 0.1), transparent);
+        }
+
+        .nav-link.active::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+        }
+
+        .nav-icon {
+            width: 20px;
+            height: 20px;
+            margin-right: 1rem;
+            fill: currentColor;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            padding: 2rem;
+            overflow-y: auto;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            padding: 1.5rem 2rem;
+            border-radius: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        .header h2 {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #1e293b;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.6);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.9);
+            color: #64748b;
+            border: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-secondary:hover {
+            background: white;
+            color: #334155;
+        }
+
+        /* Stats Cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            padding: 1.5rem;
+            border-radius: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-4px);
+        }
+
+        .stat-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1rem;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            color: #64748b;
+            font-size: 0.875rem;
+        }
+
+        /* Timetable Grid */
+        .timetable-container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+        }
+
+        .timetable-header {
+            display: flex;
+            justify-content: between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .timetable-header h3 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #1e293b;
+        }
+
+        .week-selector {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .week-day {
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            background: rgba(0, 0, 0, 0.05);
+            color: #64748b;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .week-day.active,
+        .week-day:hover {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+        }
+
+        .timetable {
+            display: grid;
+            grid-template-columns: 100px repeat(5, 1fr);
+            gap: 1px;
+            background: rgba(0, 0, 0, 0.1);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .time-slot,
+        .class-slot {
+            background: white;
+            padding: 1rem;
+            min-height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .time-slot {
+            font-weight: 600;
+            color: #64748b;
+            background: rgba(248, 250, 252, 1);
+        }
+
+        .class-slot {
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .class-slot:hover {
+            background: rgba(102, 126, 234, 0.05);
+        }
+
+        .class-slot.occupied {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));
+            border: 2px solid rgba(102, 126, 234, 0.3);
+        }
+
+        .class-info {
+            text-align: center;
+        }
+
+        .class-subject {
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 0.25rem;
+        }
+
+        .class-teacher {
+            font-size: 0.875rem;
+            color: #64748b;
+        }
+
+        .class-room {
+            font-size: 0.75rem;
+            color: #94a3b8;
+            background: rgba(102, 126, 234, 0.1);
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            margin-top: 0.5rem;
+        }
+
+        /* Quick Actions */
+        .quick-actions {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .action-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            padding: 2rem;
+            border-radius: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        .action-card h4 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 1rem;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-label {
+            display: block;
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 0.5rem;
+        }
+
+        .form-input,
+        .form-select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-input:focus,
+        .form-select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .fade-in-up {
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+                padding: 1rem 0;
+            }
+
+            .nav-menu {
+                display: flex;
+                overflow-x: auto;
+                padding: 0 1rem;
+            }
+
+            .nav-item {
+                flex-shrink: 0;
+                margin-right: 1rem;
+            }
+
+            .main-content {
+                padding: 1rem;
+            }
+
+            .timetable {
+                font-size: 0.875rem;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="logo">
+                <h1>📚 EduSchedule</h1>
+            </div>
+            <nav>
+                <ul class="nav-menu">
+                    <li class="nav-item">
+                        <a href="#" class="nav-link active">
+                            <svg class="nav-icon" viewBox="0 0 24 24">
+                                <path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/>
+                            </svg>
+                            Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link">
+                            <svg class="nav-icon" viewBox="0 0 24 24">
+                                <path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM7 10h5v5H7z"/>
+                            </svg>
+                            Timetable
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link">
+                            <svg class="nav-icon" viewBox="0 0 24 24">
+                                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                            </svg>
+                            Classes
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link">
+                            <svg class="nav-icon" viewBox="0 0 24 24">
+                                <path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/>
+                            </svg>
+                            Rooms
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link">
+                            <svg class="nav-icon" viewBox="0 0 24 24">
+                                <path d="M16 4c0-1.11.89-2 2-2s2 .89 2 2-.89 2-2 2-2-.89-2-2zm4 18v-6h2.5l-2.54-7.63A3.001 3.001 0 0 0 16.56 6c-.55 0-1.08.22-1.48.62L12.49 9.2c-.81.81-.81 2.13 0 2.94.81.81 2.13.81 2.94 0L16.56 11l.72 2.16L15 15.5V22h2v-5l1.8-1.9L20 18.5V22h2z"/>
+                            </svg>
+                            Teachers
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link">
+                            <svg class="nav-icon" viewBox="0 0 24 24">
+                                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                            </svg>
+                            Analytics
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Header -->
+            <header class="header fade-in-up">
+                <div>
+                    <h2>Smart Classroom Dashboard</h2>
+                    <p style="color: #64748b; margin-top: 0.5rem;">Monday, August 26, 2025</p>
+                </div>
+                <div class="header-actions">
+                    <button class="btn btn-secondary">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/>
+                        </svg>
+                        Help
+                    </button>
+                    <button class="btn btn-primary">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
+                        </svg>
+                        New Schedule
+                    </button>
+                </div>
+            </header>
+
+            <!-- Stats Grid -->
+            <div class="stats-grid fade-in-up" style="animation-delay: 0.1s;">
+                <div class="stat-card">
+                    <div class="stat-icon" style="background: linear-gradient(135deg, #667eea, #764ba2); color: white;">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/>
+                        </svg>
+                    </div>
+                    <div class="stat-value">24</div>
+                    <div class="stat-label">Active Classrooms</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon" style="background: linear-gradient(135deg, #f093fb, #f5576c); color: white;">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M16 4c0-1.11.89-2 2-2s2 .89 2 2-.89 2-2 2-2-.89-2-2zm4 18v-6h2.5l-2.54-7.63A3.001 3.001 0 0 0 16.56 6c-.55 0-1.08.22-1.48.62L12.49 9.2c-.81.81-.81 2.13 0 2.94.81.81 2.13.81 2.94 0L16.56 11l.72 2.16L15 15.5V22h2v-5l1.8-1.9L20 18.5V22h2z"/>
+                        </svg>
+                    </div>
+                    <div class="stat-value">142</div>
+                    <div class="stat-label">Teachers</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon" style="background: linear-gradient(135deg, #4facfe, #00f2fe); color: white;">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM7 10h5v5H7z"/>
+                        </svg>
+                    </div>
+                    <div class="stat-value">1,247</div>
+                    <div class="stat-label">Scheduled Classes</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon" style="background: linear-gradient(135deg, #fa709a, #fee140); color: white;">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M9 11H7v6h2v-6zm4 0h-2v6h2v-6zm4 0h-2v6h2v-6zm2.5-5H15V4.5C15 3.12 13.88 2 12.5 2S10 3.12 10 4.5V6H5.5C4.67 6 4 6.67 4 7.5S4.67 9 5.5 9H6v8c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V9h.5c.83 0 1.5-.67 1.5-1.5S19.33 6 18.5 6z"/>
+                        </svg>
+                    </div>
+                    <div class="stat-value">96%</div>
+                    <div class="stat-label">Utilization Rate</div>
+                </div>
+            </div>
+
+            <!-- Timetable Container -->
+            <div class="timetable-container fade-in-up" style="animation-delay: 0.2s;">
+                <div class="timetable-header">
+                    <h3>Weekly Schedule Overview</h3>
+                    <div class="week-selector">
+                        <div class="week-day active">Mon</div>
+                        <div class="week-day">Tue</div>
+                        <div class="week-day">Wed</div>
+                        <div class="week-day">Thu</div>
+                        <div class="week-day">Fri</div>
+                    </div>
+                </div>
+                
+                <div class="timetable">
+                    <div class="time-slot">Time</div>
+                    <div class="time-slot">Room A101</div>
+                    <div class="time-slot">Room B205</div>
+                    <div class="time-slot">Lab C301</div>
+                    <div class="time-slot">Hall D102</div>
+
+                    <div class="time-slot">9:00 AM</div>
+                    <div class="class-slot occupied">
+                        <div class="class-info">
+                            <div class="class-subject">Mathematics</div>
+                            <div class="class-teacher">Dr. Smith</div>
+                            <div class="class-room">A101</div>
+                        </div>
+                    </div>
+                    <div class="class-slot"></div>
+                    <div class="class-slot occupied">
+                        <div class="class-info">
+                            <div class="class-subject">Physics Lab</div>
+                            <div class="class-teacher">Prof. Johnson</div>
+                            <div class="class-room">C301</div>
+                        </div>
+                    </div>
+                    <div class="class-slot"></div>
+
+                    <div class="time-slot">10:30 AM</div>
+                    <div class="class-slot"></div>
+                    <div class="class-slot occupied">
+                        <div class="class-info">
+                            <div class="class-subject">Chemistry</div>
+                            <div class="class-teacher">Dr. Brown</div>
+                            <div class="class-room">B205</div>
+                        </div>
+                    </div>
+                    <div class="class-slot"></div>
+                    <div class="class-slot occupied">
+                        <div class="class-info">
+                            <div class="class-subject">Assembly</div>
+                            <div class="class-teacher">Principal</div>
+                            <div class="class-room">D102</div>
+                        </div>
+                    </div>
+
+                    <div class="time-slot">12:00 PM</div>
+                    <div class="class-slot occupied">
+                        <div class="class-info">
+                            <div class="class-subject">English</div>
+                            <div class="class-teacher">Ms. Davis</div>
+                            <div class="class-room">A101</div>
+                        </div>
+                    </div>
+                    <div class="class-slot"></div>
+                    <div class="class-slot occupied">
+                        <div class="class-info">
+                            <div class="class-subject">Biology Lab</div>
+                            <div class="class-teacher">Dr. Wilson</div>
+                            <div class="class-room">C301</div>
+                        </div>
+                    </div>
+                    <div class="class-slot"></div>
+
+                    <div class="time-slot">2:00 PM</div>
+                    <div class="class-slot"></div>
+                    <div class="class-slot occupied">
+                        <div class="class-info">
+                            <div class="class-subject">History</div>
+                            <div class="class-teacher">Mr. Taylor</div>
+                            <div class="class-room">B205</div>
+                        </div>
+                    </div>
+                    <div class="class-slot"></div>
+                    <div class="class-slot occupied">
+                        <div class="class-info">
+                            <div class="class-subject">Sports</div>
+                            <div class="class-teacher">Coach Lee</div>
+                            <div class="class-room">D102</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="quick-actions fade-in-up" style="animation-delay: 0.3s;">
+                <div class="action-card">
+                    <h4>🎯 Quick Schedule</h4>
+                    <div class="form-group">
+                        <label class="form-label">Subject</label>
+                        <select class="form-select">
+                            <option>Select Subject</option>
+                            <option>Mathematics</option>
+                            <option>Physics</option>
+                            <option>Chemistry</option>
+                            <option>English</option>
+                            <option>History</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Time Slot</label>
+                        <select class="form-select">
+                            <option>Select Time</option>
+                            <option>9:00 AM - 10:30 AM</option>
+                            <option>10:30 AM - 12:00 PM</option>
+                            <option>12:00 PM - 1:30 PM</option>
+                            <option>2:00 PM - 3:30 PM</option>
+                        </select>
+                    </div>
+                    <button class="btn btn-primary" style="width: 100%;">Schedule Class</button>
+                </div>
+
+                <div class="action-card">
+                    <h4>🏫 Room Availability</h4>
+                    <div class="form-group">
+                        <label class="form-label">Check Date</label>
+                        <input type="date" class="form-input" value="2025-08-26">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Time Range</label>
+                        <select class="form-select">
+                            <option>Full Day</option>
+                            <option>Morning (9 AM - 12 PM)</option>
+                            <option>Afternoon (12 PM - 5 PM)</option>
+                            <option>Evening (5 PM - 8 PM)</option>
+                        </select>
+                    </div>
+                    <button class="btn btn-primary" style="width: 100%;">Check Availability</button>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Interactive features
+        document.addEventListener('DOMContentLoaded', function() {
+            // Week day selector
+            const weekDays = document.querySelectorAll('.week-day');
+            weekDays.forEach(day => {
+                day.addEventListener('click', function() {
+                    weekDays.forEach(d => d.classList.remove('active'));
+                    this.classList.add('active');
+                    updateTimetable(this.textContent);
+                });
+            });
+
+            // Navigation menu
+            const navLinks = document.querySelectorAll('.nav-link');
+            navLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    navLinks.forEach(l => l.classList.remove('active'));
+                    this.classList.add('active');
+                });
+            });
+
+            // Class slot interactions
+            const classSlots = document.querySelectorAll('.class-slot:not(.occupied)');
+            classSlots.forEach(slot => {
+                slot.addEventListener('click', function() {
+                    if (confirm('Schedule a new class for this time slot?')) {
+                        this.classList.add('occupied');
+                        this.innerHTML = `
+                            <div class="class-info">
+                                <div class="class-subject">New Class</div>
+                                <div class="class-teacher">TBD</div>
+                                <div class="class-room">TBD</div>
+                            </div>
+                        `;
+                    }
+                });
+            });
+
+            // Form submissions
+            const scheduleBtn = document.querySelector('.action-card .btn-primary');
+            scheduleBtn.addEventListener('click', function() {
+                const subject = this.closest('.action-card').querySelector('select').value;
+                if (subject !== 'Select Subject') {
+                    this.textContent = 'Scheduled!';
+                    this.style.background = 'linear-gradient(135deg, #10b981, #059669)';
+                    setTimeout(() => {
+                        this.textContent = 'Schedule Class';
+                        this.style.background = 'linear-gradient(135deg, #667eea, #764ba2)';
+                    }, 2000);
+                } else {
+                    alert('Please select a subject first!');
+                }
+            });
+
+            // Auto-refresh stats (simulation)
+            setInterval(updateStats, 5000);
+        });
+
+        function updateTimetable(day) {
+            // Simulate different schedules for different days
+            const schedules = {
+                'Mon': [
+                    {subject: 'Mathematics', teacher: 'Dr. Smith', room: 'A101'},
+                    {subject: 'Physics Lab', teacher: 'Prof. Johnson', room: 'C301'},
+                    {subject: 'Chemistry', teacher: 'Dr. Brown', room: 'B205'},
+                    {subject: 'Assembly', teacher: 'Principal', room: 'D102'}
+                ],
+                'Tue': [
+                    {subject: 'English', teacher: 'Ms. Davis', room: 'A101'},
+                    {subject: 'Biology', teacher: 'Dr. Wilson', room: 'B205'},
+                    {subject: 'Computer Lab', teacher: 'Mr. Zhang', room: 'C301'},
+                    {subject: 'Music', teacher: 'Ms. Garcia', room: 'D102'}
+                ],
+                'Wed': [
+                    {subject: 'History', teacher: 'Mr. Taylor', room: 'A101'},
+                    {subject: 'Art', teacher: 'Ms. Rodriguez', room: 'B205'},
+                    {subject: 'Chemistry Lab', teacher: 'Dr. Brown', room: 'C301'},
+                    {subject: 'PE', teacher: 'Coach Lee', room: 'D102'}
+                ]
+            };
+
+            // This would update the timetable display based on the selected day
+            console.log(`Switching to ${day} schedule`);
+        }
+
+        function updateStats() {
+            // Simulate real-time stat updates
+            const statValues = document.querySelectorAll('.stat-value');
+            statValues.forEach(stat => {
+                const currentValue = parseInt(stat.textContent);
+                const variation = Math.floor(Math.random() * 3) - 1; // -1, 0, or 1
+                const newValue = Math.max(0, currentValue + variation);
+                
+                if (stat.textContent.includes('%')) {
+                    stat.textContent = Math.min(100, newValue) + '%';
+                } else {
+                    stat.textContent = newValue;
+                }
+            });
+        }
+
+        // Add smooth scrolling and enhanced interactions
+        document.querySelectorAll('.btn').forEach(btn => {
+            btn.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateY(-2px)';
+            });
+            
+            btn.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateY(0)';
+            });
+        });
+
+        // Add ripple effect to buttons
+        function createRipple(event) {
+            const button = event.currentTarget;
+            const circle = document.createElement('span');
+            const diameter = Math.max(button.clientWidth, button.clientHeight);
+            const radius = diameter / 2;
+
+            circle.style.width = circle.style.height = `${diameter}px`;
+            circle.style.left = `${event.clientX - button.offsetLeft - radius}px`;
+            circle.style.top = `${event.clientY - button.offsetTop - radius}px`;
+            circle.classList.add('ripple');
+
+            const ripple = button.getElementsByClassName('ripple')[0];
+            if (ripple) {
+                ripple.remove();
+            }
+
+            button.appendChild(circle);
+        }
+
+        document.querySelectorAll('.btn-primary').forEach(btn => {
+            btn.addEventListener('click', createRipple);
+        });
+
+        // Add CSS for ripple effect
+        const rippleStyle = document.createElement('style');
+        rippleStyle.textContent = `
+            .btn {
+                position: relative;
+                overflow: hidden;
+            }
+            
+            .ripple {
+                position: absolute;
+                border-radius: 50%;
+                background-color: rgba(255, 255, 255, 0.4);
+                transform: scale(0);
+                animation: ripple-animation 0.6s linear;
+            }
+            
+            @keyframes ripple-animation {
+                to {
+                    transform: scale(4);
+                    opacity: 0;
+                }
+            }
+        `;
+        document.head.appendChild(rippleStyle);
+    </script>
+</body>
+</html>
